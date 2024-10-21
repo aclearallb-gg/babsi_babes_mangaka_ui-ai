@@ -1,4 +1,5 @@
 from flask import Flask, render_template, request, jsonify, make_response
+from flask_wtf.csrf import CSRFProtect
 import logging
 from werkzeug.exceptions import BadRequest, NotFound
 from AI_Story_Generator import generate_story
@@ -9,9 +10,11 @@ from Storage_And_Undo import save_project, load_project, undo_action, auto_save
 import os
 from functools import wraps
 from translations import get_translation
+from typing import Dict, Any
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'fallback_secret_key')
+csrf = CSRFProtect(app)
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -47,7 +50,7 @@ def index():
 @handle_request
 def story_generator():
     data = request.json
-    story = generate_story(data['prompt'])
+    story = generate_story(data['prompt'], data['characters'], data['scene'])
     return jsonify({'story': story})
 
 @app.route('/create_character', methods=['POST'])

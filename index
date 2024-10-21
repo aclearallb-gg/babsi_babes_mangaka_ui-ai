@@ -8,6 +8,7 @@
   - main.py
   - templates/
     - index.html
+    - scene_builder.html
   - AI_Story_Generator/
     - __init__.py
   - Storage_And_Undo/
@@ -20,11 +21,22 @@
     - __init__.py
   - UI/
     - __init__.py
+  - translations.py
+  - tests.py
 
 ## Recent Changes:
-- Updated main.py for production
-- Improved HTML structure
-- Added basic module structures
-- Updated README.md
-- Created requirements.txt and .gitignore
+- Improved security in main.py (CSRF protection, error handling)
+- Updated Character_Wizard module with better documentation and type hints
+- Added scene_builder.html template
+- Implemented auto-save functionality
+- Updated requirements.txt with new dependencies
+- Added translations.py for multilingual support
+- Created tests.py for unit testing
 - Updated project index
+
+## TODO:
+- Implement remaining empty modules (Scenes, Card_Design)
+- Enhance UI module
+- Expand test coverage
+- Optimize database queries (if applicable)
+- Implement caching for frequently accessed data
