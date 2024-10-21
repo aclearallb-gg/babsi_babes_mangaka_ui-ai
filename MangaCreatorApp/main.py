@@ -11,10 +11,12 @@ import os
 from functools import wraps
 from translations import get_translation
 from typing import Dict, Any
+from flask_caching import Cache
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'fallback_secret_key')
 csrf = CSRFProtect(app)
+cache = Cache(app, config={'CACHE_TYPE': 'simple'})
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -25,24 +27,25 @@ def handle_request(func):
         try:
             return func(*args, **kwargs)
         except KeyError as e:
-            logger.error(f"Missing key in request data: {e}")
-            raise BadRequest(f"Missing key in request data: {e}")
+            logger.error(f"リクエストデータにキーがありません: {e}")
+            raise BadRequest(f"リクエストデータにキーがありません: {e}")
         except Exception as e:
-            logger.error(f"Error in {func.__name__}: {e}")
-            return jsonify(error=f"An error occurred during {func.__name__}"), 500
+            logger.error(f"{func.__name__}でエラーが発生しました: {e}")
+            return jsonify(error=f"{func.__name__}中にエラーが発生しました"), 500
     return wrapper
 
 @app.errorhandler(BadRequest)
 def handle_bad_request(e):
-    logger.error(f"Bad request: {e}")
+    logger.error(f"不正なリクエスト: {e}")
     return jsonify(error=str(e)), 400
 
 @app.errorhandler(NotFound)
 def handle_not_found(e):
-    logger.error(f"Not found: {e}")
-    return jsonify(error="Resource not found"), 404
+    logger.error(f"リソースが見つかりません: {e}")
+    return jsonify(error="リソースが見つかりません"), 404
 
 @app.route('/')
+@cache.cached(timeout=300)  # 5分間キャッシュ
 def index():
     return render_template('index.html')
 

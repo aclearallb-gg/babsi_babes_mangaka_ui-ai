@@ -25,18 +25,19 @@
   - tests.py
 
 ## Recent Changes:
+- Updated requirements.txt with latest package versions
 - Improved security in main.py (CSRF protection, error handling)
+- Implemented caching for better performance
 - Updated Character_Wizard module with better documentation and type hints
 - Added scene_builder.html template
 - Implemented auto-save functionality
-- Updated requirements.txt with new dependencies
-- Added translations.py for multilingual support
-- Created tests.py for unit testing
+- Updated translations.py for multilingual support
+- Expanded test coverage in tests.py
 - Updated project index
 
 ## TODO:
-- Implement remaining empty modules (Scenes, Card_Design)
-- Enhance UI module
-- Expand test coverage
-- Optimize database queries (if applicable)
-- Implement caching for frequently accessed data
+- Implement remaining empty modules (UI)
+- Further optimize database queries (if applicable)
+- Implement more advanced caching strategies
+- Conduct thorough security audit
+- Implement continuous integration and deployment pipeline

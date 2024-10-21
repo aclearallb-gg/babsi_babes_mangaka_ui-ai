@@ -53,10 +53,10 @@ def generate_character_card(character: Dict[str, str]) -> str:
     font = ImageFont.truetype("arial.ttf", 16)
 
     # Add character information to the card
-    d.text((10,10), f"Name: {character['name']}", fill=(0,0,0), font=font)
-    d.text((10,30), f"Appearance: {character['appearance']}", fill=(0,0,0), font=font)
-    d.text((10,50), f"Traits: {', '.join(character['traits'])}", fill=(0,0,0), font=font)
-    d.text((10,70), f"Backstory: {character['backstory']}", fill=(0,0,0), font=font)
+    d.text((10,10), f"名前: {character['name']}", fill=(0,0,0), font=font)
+    d.text((10,30), f"外見: {character['appearance']}", fill=(0,0,0), font=font)
+    d.text((10,50), f"特性: {', '.join(character['traits'])}", fill=(0,0,0), font=font)
+    d.text((10,70), f"背景: {character['backstory']}", fill=(0,0,0), font=font)
 
     # Save the image
     img_path = f"static/character_cards/{character['name'].replace(' ', '_')}.png"
