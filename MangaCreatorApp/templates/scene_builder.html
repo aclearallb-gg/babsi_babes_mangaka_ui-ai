@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scene Builder</title>
+    <script src="https://cdn.jsdelivr.net/npm/interactjs/dist/interact.min.js"></script>
+    <style>
+        .dropzone {
+            width: 500px;
+            height: 300px;
+            border: 2px dashed #ccc;
+            padding: 10px;
+        }
+        .draggable {
+            width: 100px;
+            height: 100px;
+            background-color: #f1f1f1;
+            border: 1px solid #999;
+            margin: 5px;
+            padding: 5px;
+            cursor: move;
+        }
+    </style>
+</head>
+<body>
+    <h1>Scene Builder</h1>
+    <div id="elements">
+        <div class="draggable" data-type="character">Character</div>
+        <div class="draggable" data-type="prop">Prop</div>
+        <div class="draggable" data-type="background">Background</div>
+    </div>
+    <div id="scene" class="dropzone"></div>
+    <button onclick="saveScene()">Save Scene</button>
+
+    <script>
+        interact('.draggable')
+            .draggable({
+                inertia: true,
+                modifiers: [
+                    interact.modifiers.restrictRect({
+                        restriction: 'parent',
+                        endOnly: true
+                    })
+                ],
+                autoScroll: true,
+                onmove: dragMoveListener
+            });
+
+        interact('.dropzone').dropzone({
+            accept: '.draggable',
+            overlap: 0.75,
+            ondropactivate: function (event) {
+                event.target.classList.add('drop-active');
+            },
+            ondropdeactivate: function (event) {
+                event.target.classList.remove('drop-active');
+            },
+            ondragenter: function (event) {
+                var draggableElement = event.relatedTarget;
+                var dropzoneElement = event.target;
+                dropzoneElement.classList.add('drop-target');
+                draggableElement.classList.add('can-drop');
+            },
+            ondragleave: function (event) {
+                event.target.classList.remove('drop-target');
+                event.relatedTarget.classList.remove('can-drop');
+            },
+            ondrop: function (event) {
+                event.relatedTarget.textContent = 'Dropped';
+            }
+        });
+
+        function dragMoveListener (event) {
+            var target = event.target;
+            var x = (parseFloat(target.getAttribute('data-x')) || 0) + event.dx;
+            var y = (parseFloat(target.getAttribute('data-y')) || 0) + event.dy;
+
+            target.style.webkitTransform =
+            target.style.transform =
+                'translate(' + x + 'px, ' + y + 'px)';
+
+            target.setAttribute('data-x', x);
+            target.setAttribute('data-y', y);
+        }
+
+        function saveScene() {
+            var elements = Array.from(document.querySelectorAll('#scene .draggable')).map(el => ({
+                type: el.getAttribute('data-type'),
+                x: el.getAttribute('data-x'),
+                y: el.getAttribute('data-y')
+            }));
+
+            fetch('/scene-builder', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ elements: elements }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert('Scene saved: ' + JSON.stringify(data.scene));
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
+        }
+    </script>
+</body>
+</html>

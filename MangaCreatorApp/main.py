@@ -8,6 +8,7 @@ from Card_Design import design_card
 from Storage_And_Undo import save_project, load_project, undo_action
 import os
 from functools import wraps
+from translations import get_translation
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'fallback_secret_key')
@@ -105,6 +106,22 @@ def set_language():
     language = data['language']
     # Here you would typically set the language in the session or user preferences
     return jsonify({'result': f'Language set to {language}'})
+
+@app.route('/scene-builder', methods=['GET', 'POST'])
+@handle_request
+def scene_builder():
+    if request.method == 'POST':
+        data = request.json
+        scene = create_scene(data['elements'])
+        return jsonify({'scene': scene})
+    return render_template('scene_builder.html')
+
+@app.route('/get_translation', methods=['POST'])
+@handle_request
+def get_translation_route():
+    data = request.json
+    translation = get_translation(data['key'], data.get('lang', 'en'))
+    return jsonify({'text': translation})
 
 if __name__ == '__main__':
     app.run(debug=False, host='0.0.0.0')

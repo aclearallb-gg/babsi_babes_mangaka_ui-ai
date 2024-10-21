@@ -1,5 +1,6 @@
 import json
 import os
+import time
 from typing import Dict, Any, Tuple, List
 
 PROJECTS_DIR = 'projects'
@@ -83,3 +84,29 @@ def undo_action(action_id: str) -> str:
             return f"Error removing saved project: {e}"
     
     return "Undo action not supported"
+
+def auto_save(project_data: Dict[str, Any]) -> str:
+    """
+    Automatically save the project at regular intervals.
+
+    Args:
+        project_data (Dict[str, Any]): The project data to save.
+
+    Returns:
+        str: A message indicating the success of the operation.
+    """
+    timestamp = int(time.time())
+    filename = f"{PROJECTS_DIR}/auto_save_{timestamp}.json"
+    
+    try:
+        with open(filename, 'w') as f:
+            json.dump(project_data, f)
+    except IOError as e:
+        raise IOError(f"Error auto-saving project: {e}")
+    
+    # Keep only the last 5 auto-saves
+    auto_saves = sorted([f for f in os.listdir(PROJECTS_DIR) if f.startswith('auto_save_')])
+    for old_save in auto_saves[:-5]:
+        os.remove(os.path.join(PROJECTS_DIR, old_save))
+    
+    return f"Project auto-saved at {timestamp}"

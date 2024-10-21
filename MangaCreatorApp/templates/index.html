@@ -13,10 +13,10 @@
     </style>
 </head>
 <body>
-    <h1>Welcome to the Manga Creator App</h1>
+    <h1 id="welcome">Welcome to the Manga Creator App</h1>
     <div id="app">
         <section>
-            <h2>Story Generator</h2>
+            <h2 id="story_generator">Story Generator</h2>
             <textarea id="story-prompt" placeholder="Enter your story prompt"></textarea>
             <button onclick="generateStory()">Generate Story</button>
             <div id="story-output"></div>
@@ -153,8 +153,19 @@
 
         async function setLanguage(lang) {
             const result = await makeRequest(API_ENDPOINTS.setLanguage, 'POST', { language: lang });
-            if (result) alert(result.result);
-            // Here you would typically update the UI to reflect the new language
+            if (result) {
+                updateUILanguage(lang);
+            }
+        }
+
+        async function updateUILanguage(lang) {
+            const elements = document.querySelectorAll('[id]');
+            for (let element of elements) {
+                const translation = await makeRequest('/get_translation', 'POST', { key: element.id, lang: lang });
+                if (translation && translation.text) {
+                    element.innerText = translation.text;
+                }
+            }
         }
     </script>
 </body>
