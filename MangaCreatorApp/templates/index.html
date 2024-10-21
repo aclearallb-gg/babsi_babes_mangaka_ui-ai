@@ -4,6 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Manga Creator App</title>
+    <style>
+        /* Add some basic styling */
+        body { font-family: Arial, sans-serif; line-height: 1.6; padding: 20px; }
+        section { margin-bottom: 20px; }
+        button { cursor: pointer; }
+        #character-card { max-width: 300px; }
+    </style>
 </head>
 <body>
     <h1>Welcome to the Manga Creator App</h1>
@@ -19,6 +26,8 @@
             <input type="text" id="character-characteristics" placeholder="Enter character characteristics">
             <button onclick="createCharacter()">Create Character</button>
             <div id="character-output"></div>
+            <button onclick="generateCharacterCard()">Generate Character Card</button>
+            <img id="character-card" src="" alt="Character Card" style="display: none;">
         </section>
         <section>
             <h2>Scene Creator</h2>
@@ -39,16 +48,114 @@
             <button onclick="loadProject()">Load Project</button>
             <button onclick="undoAction()">Undo Last Action</button>
         </section>
+        <section>
+            <h2>Language</h2>
+            <button onclick="setLanguage('en')">English</button>
+            <button onclick="setLanguage('ja')">日本語</button>
+        </section>
     </div>
     <script>
-        // TODO: Implement JavaScript functions to interact with the backend
-        function generateStory() {}
-        function createCharacter() {}
-        function createScene() {}
-        function designCard() {}
-        function saveProject() {}
-        function loadProject() {}
-        function undoAction() {}
+        const API_ENDPOINTS = {
+            generateStory: '/generate_story',
+            createCharacter: '/create_character',
+            generateCharacterCard: '/generate_character_card',
+            createScene: '/create_scene',
+            designCard: '/design_card',
+            saveProject: '/save_project',
+            loadProject: '/load_project',
+            undo: '/undo',
+            setLanguage: '/language'
+        };
+
+        async function makeRequest(url, method, data) {
+            try {
+                const response = await fetch(url, {
+                    method: method,
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data),
+                });
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return await response.json();
+            } catch (error) {
+                console.error("API request failed:", error);
+                alert("An error occurred. Please try again.");
+            }
+        }
+
+        function updateOutput(elementId, data) {
+            document.getElementById(elementId).innerText = JSON.stringify(data, null, 2);
+        }
+
+        async function generateStory() {
+            const prompt = document.getElementById('story-prompt').value;
+            const result = await makeRequest(API_ENDPOINTS.generateStory, 'POST', { prompt });
+            if (result) updateOutput('story-output', result.story);
+        }
+
+        async function createCharacter() {
+            const characteristics = document.getElementById('character-characteristics').value;
+            const result = await makeRequest(API_ENDPOINTS.createCharacter, 'POST', { characteristics });
+            if (result) updateOutput('character-output', result.character);
+        }
+
+        async function generateCharacterCard() {
+            const character = JSON.parse(document.getElementById('character-output').innerText);
+            const result = await makeRequest(API_ENDPOINTS.generateCharacterCard, 'POST', { character });
+            if (result) {
+                const cardImg = document.getElementById('character-card');
+                cardImg.src = result.card;
+                cardImg.style.display = 'block';
+            }
+        }
+
+        async function createScene() {
+            const description = document.getElementById('scene-description').value;
+            const result = await makeRequest(API_ENDPOINTS.createScene, 'POST', { description });
+            if (result) updateOutput('scene-output', result.scene);
+        }
+
+        async function designCard() {
+            const content = document.getElementById('card-content').value;
+            const result = await makeRequest(API_ENDPOINTS.designCard, 'POST', { content });
+            if (result) updateOutput('card-output', result.card);
+        }
+
+        async function saveProject() {
+            const projectData = {
+                story: document.getElementById('story-output').innerText,
+                character: document.getElementById('character-output').innerText,
+                scene: document.getElementById('scene-output').innerText,
+                card: document.getElementById('card-output').innerText,
+            };
+            const result = await makeRequest(API_ENDPOINTS.saveProject, 'POST', { project_data: projectData });
+            if (result) alert(result.result);
+        }
+
+        async function loadProject() {
+            const projectId = document.getElementById('project-id').value;
+            const result = await makeRequest(`${API_ENDPOINTS.loadProject}?project_id=${projectId}`, 'GET');
+            if (result) {
+                document.getElementById('story-output').innerText = result.project_data.story || '';
+                document.getElementById('character-output').innerText = result.project_data.character || '';
+                document.getElementById('scene-output').innerText = result.project_data.scene || '';
+                document.getElementById('card-output').innerText = result.project_data.card || '';
+            }
+        }
+
+        async function undoAction() {
+            const result = await makeRequest(API_ENDPOINTS.undo, 'POST', { action_id: 'last' });
+            if (result) alert(result.result);
+        }
+
+        async function setLanguage(lang) {
+            const result = await makeRequest(API_ENDPOINTS.setLanguage, 'POST', { language: lang });
+            if (result) alert(result.result);
+            // Here you would typically update the UI to reflect the new language
+        }
     </script>
 </body>
 </html>
