@@ -1,9 +1,1 @@
-.card {
-        border: 1px solid #ccc;
-        padding: 16px;
-        text-align: center;
-      }
-      .card img {
-        width: 100%;
-        height: auto;
-      }
+.card { border: 1px solid #ccc; padding: 16px; text-align: center; } .card img { width: 100%; height: auto; }
