@@ -5,7 +5,7 @@ from AI_Story_Generator import generate_story
 from Character_Wizard import create_character, generate_character_card
 from Scenes import create_scene
 from Card_Design import design_card
-from Storage_And_Undo import save_project, load_project, undo_action
+from Storage_And_Undo import save_project, load_project, undo_action, auto_save
 import os
 from functools import wraps
 from translations import get_translation
@@ -122,6 +122,13 @@ def get_translation_route():
     data = request.json
     translation = get_translation(data['key'], data.get('lang', 'en'))
     return jsonify({'text': translation})
+
+@app.route('/auto-save', methods=['POST'])
+@handle_request
+def auto_save_route():
+    data = request.json
+    result = auto_save(data['project_data'])
+    return jsonify({'result': result})
 
 if __name__ == '__main__':
     app.run(debug=False, host='0.0.0.0')

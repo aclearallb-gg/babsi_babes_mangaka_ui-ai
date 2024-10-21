@@ -18,11 +18,13 @@
         <section>
             <h2 id="story_generator">Story Generator</h2>
             <textarea id="story-prompt" placeholder="Enter your story prompt"></textarea>
+            <input id="story-characters" placeholder="Enter character names (comma-separated)">
+            <input id="story-scene" placeholder="Describe the scene">
             <button onclick="generateStory()">Generate Story</button>
             <div id="story-output"></div>
         </section>
         <section>
-            <h2>Character Creator</h2>
+            <h2 id="character_creator">Character Creator</h2>
             <input type="text" id="character-characteristics" placeholder="Enter character characteristics">
             <button onclick="createCharacter()">Create Character</button>
             <div id="character-output"></div>
@@ -30,19 +32,19 @@
             <img id="character-card" src="" alt="Character Card" style="display: none;">
         </section>
         <section>
-            <h2>Scene Creator</h2>
+            <h2 id="scene_creator">Scene Creator</h2>
             <textarea id="scene-description" placeholder="Describe your scene"></textarea>
             <button onclick="createScene()">Create Scene</button>
             <div id="scene-output"></div>
         </section>
         <section>
-            <h2>Card Designer</h2>
+            <h2 id="card_designer">Card Designer</h2>
             <textarea id="card-content" placeholder="Enter card content"></textarea>
             <button onclick="designCard()">Design Card</button>
             <div id="card-output"></div>
         </section>
         <section>
-            <h2>Project Management</h2>
+            <h2 id="project_management">Project Management</h2>
             <button onclick="saveProject()">Save Project</button>
             <input type="text" id="project-id" placeholder="Enter project ID">
             <button onclick="loadProject()">Load Project</button>
@@ -52,6 +54,10 @@
             <h2>Language</h2>
             <button onclick="setLanguage('en')">English</button>
             <button onclick="setLanguage('ja')">日本語</button>
+        </section>
+        <section>
+            <h2>Scene Builder</h2>
+            <a href="/scene-builder">Open Scene Builder</a>
         </section>
     </div>
     <script>
@@ -92,7 +98,9 @@
 
         async function generateStory() {
             const prompt = document.getElementById('story-prompt').value;
-            const result = await makeRequest(API_ENDPOINTS.generateStory, 'POST', { prompt });
+            const characters = document.getElementById('story-characters').value.split(',');
+            const scene = document.getElementById('story-scene').value;
+            const result = await makeRequest(API_ENDPOINTS.generateStory, 'POST', { prompt, characters, scene });
             if (result) updateOutput('story-output', result.story);
         }
 
@@ -167,6 +175,23 @@
                 }
             }
         }
+
+        function startAutoSave() {
+            setInterval(async function() {
+                const projectData = {
+                    story: document.getElementById('story-output').innerText,
+                    character: document.getElementById('character-output').innerText,
+                    scene: document.getElementById('scene-output').innerText,
+                    card: document.getElementById('card-output').innerText,
+                };
+                await makeRequest('/auto-save', 'POST', { project_data: projectData });
+            }, 300000); // Auto-save every 5 minutes
+        }
+
+        // Call this function when the page loads
+        window.onload = function() {
+            startAutoSave();
+        };
     </script>
 </body>
 </html>
