@@ -1,1 +1,54 @@
-<h1>Welcome to the Manga Creator App</h1>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manga Creator App</title>
+</head>
+<body>
+    <h1>Welcome to the Manga Creator App</h1>
+    <div id="app">
+        <section>
+            <h2>Story Generator</h2>
+            <textarea id="story-prompt" placeholder="Enter your story prompt"></textarea>
+            <button onclick="generateStory()">Generate Story</button>
+            <div id="story-output"></div>
+        </section>
+        <section>
+            <h2>Character Creator</h2>
+            <input type="text" id="character-characteristics" placeholder="Enter character characteristics">
+            <button onclick="createCharacter()">Create Character</button>
+            <div id="character-output"></div>
+        </section>
+        <section>
+            <h2>Scene Creator</h2>
+            <textarea id="scene-description" placeholder="Describe your scene"></textarea>
+            <button onclick="createScene()">Create Scene</button>
+            <div id="scene-output"></div>
+        </section>
+        <section>
+            <h2>Card Designer</h2>
+            <textarea id="card-content" placeholder="Enter card content"></textarea>
+            <button onclick="designCard()">Design Card</button>
+            <div id="card-output"></div>
+        </section>
+        <section>
+            <h2>Project Management</h2>
+            <button onclick="saveProject()">Save Project</button>
+            <input type="text" id="project-id" placeholder="Enter project ID">
+            <button onclick="loadProject()">Load Project</button>
+            <button onclick="undoAction()">Undo Last Action</button>
+        </section>
+    </div>
+    <script>
+        // TODO: Implement JavaScript functions to interact with the backend
+        function generateStory() {}
+        function createCharacter() {}
+        function createScene() {}
+        function designCard() {}
+        function saveProject() {}
+        function loadProject() {}
+        function undoAction() {}
+    </script>
+</body>
+</html>
