@@ -1,0 +1,7 @@
+./MangaCreatorApp/UI/__init__.py
+./duplicates.txt
+
+./.git/logs/refs/remotes/origin/HEAD
+./.git/logs/refs/heads/main
+./.git/logs/HEAD
+
